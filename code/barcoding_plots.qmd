@@ -36,6 +36,7 @@ library(plotly)
 library(lme4)
 library(glmmTMB)
 library(patchwork)
+library(ggrepel)
 
 # load data
 sd <- read_excel("QHAK2_Dec2025.xlsx", sheet = "Samples") 
@@ -90,9 +91,9 @@ novel_pal <- c("#bdd7ee", "#4472c4")
 
 ## Matt's figures in R
 
-I started by recreating Matt's figures in the document this far. 
+I started by recreating Matt's figures in the document this far.
 
-### Samples per phylum 
+### Samples per phylum
 
 The first was the number of samples assigned to each phylum:
 
@@ -115,7 +116,7 @@ ggsave("plots/biomarathon_barcoding_samples_per_phylum.png", plot = phylum_hist,
 ggplotly(phylum_hist)
 ```
 
-### Novel bins 
+### Novel bins
 
 The second was the percent of BINs that were unique per phylum:
 
@@ -141,15 +142,15 @@ ggplotly(phylum_pct_bar)
 
 ```{r}
 #| label: samples_and_pctunique_phylum
-samples_pct_unique_phylum <- phylum_hist + phylum_pct_bar + plot_annotation(tag_levels = 'A')
+samples_pct_unique_phylum <- phylum_hist / phylum_pct_bar + plot_annotation(tag_levels = 'A')
 
 ggsave("plots/biomarathon_barcoding_samples_and_pct_unique_per_phylum.png", plot = samples_pct_unique_phylum, 
-       height = 7, width = 14, units = "in", dpi = 400)
+       height = 10, width = 7, units = "in", dpi = 400)
 ```
 
 ### Samples x novel BINS
 
-Then I recreated the scatter plot where each point represents a phylum and the x-axis shows the number of samples assigned to that phylum and the y-axis shows the percent of BINs in that phylum that are novel. 
+Then I recreated the scatter plot where each point represents a phylum and the x-axis shows the number of samples assigned to that phylum and the y-axis shows the percent of BINs in that phylum that are novel.
 
 ```{r}
 #| label: samples-x-novel-bins
@@ -175,13 +176,40 @@ samples_novel_bins_bar <- sd %>%
 ggsave("plots/biomarathon_barcoding_novel_bins_per_sample.png", plot = samples_novel_bins_bar, 
        height = 5, width = 8, units = "in", dpi = 400)
 
-
 ggplotly(samples_novel_bins_bar)
+
+samples_novel_bins_bar_phylumlabs <- sd %>% 
+  group_by(Phylum, `BIN TYPE`) %>% 
+  summarise(novel_bins = n_distinct(BIN), groups = "drop") %>% 
+  pivot_wider(names_from = `BIN TYPE`, values_from = novel_bins, values_fill = 0) %>% 
+  select(-`NA`) %>% 
+  mutate(pct_uq = Unique/(`Non-unique`+Unique)) %>% 
+  select(-`Non-unique`, -Unique) %>% 
+  left_join(sample_sums, by = "Phylum") %>% 
+  ggplot(aes(x = num_samples, y = pct_uq)) +
+  geom_point(color = "#4472c4") + 
+  geom_text_repel(
+    aes(label = Phylum),
+    size = 3,
+    max.overlaps = Inf,
+    box.padding = 0.6,
+    point.padding = 0.3,
+    segment.color = "grey60"
+  ) +
+  labs(x = "Number of samples", y = "Novel BINs") +
+  scale_y_continuous(labels = percent, breaks = seq(0, 1, by = 0.1))
+
+samples_novel_bins_bar_phylumlabs
+
+ggsave("plots/biomarathon_barcoding_novel_bins_per_sample_phylumlabs.png", 
+       plot = samples_novel_bins_bar_phylumlabs, 
+       height = 5, width = 8, units = "in", dpi = 400)
+
 ```
 
-### BIN accumulation curve 
+### BIN accumulation curve
 
-Finally, I recreated the BIN accumulation curve. I'm not sure exactly how Matt made this so I used the specaccum function on a sample x BIN matrix from vegan and came up with something similar to Matt's. 
+Finally, I recreated the BIN accumulation curve. I'm not sure exactly how Matt made this so I used the specaccum function on a sample x BIN matrix from vegan and came up with something similar to Matt's.
 
 ```{r}
 #| label: bin-accumulation-curve
@@ -214,22 +242,27 @@ ggsave("plots/biomarathon_barcoding_bin_accumulation_curve.png", plot = bin_accu
 ggplotly(bin_accumulation_curve)
 ```
 
-
 ```{r}
 #| label: samples_and_accumulation
-novel_bins_and_accumulation <- samples_novel_bins_bar + bin_accumulation_curve + plot_annotation(tag_levels = 'A')
+novel_bins_and_accumulation <- samples_novel_bins_bar / bin_accumulation_curve + plot_annotation(tag_levels = 'A', )
 
 ggsave("plots/biomarathon_barcoding_novel_per_sample+accumulation_curve.png", plot = novel_bins_and_accumulation, 
-       height = 7, width = 14, units = "in", dpi = 400)
+       height = 10, width = 7, units = "in", dpi = 400)
+
+novel_bins_and_accumulation_phylumlabs <- samples_novel_bins_bar_phylumlabs / bin_accumulation_curve + plot_annotation(tag_levels = 'A', )
+
+ggsave("plots/biomarathon_barcoding_novel_per_sample_phylumlabs+accumulation_curve.png", plot = novel_bins_and_accumulation_phylumlabs, 
+       height = 10, width = 7, units = "in", dpi = 400)
+
 ```
 
 ## New figures
 
-After recreating what Matt made I plotted some new figures to identify any patterns in what BINs are novel. 
+After recreating what Matt made I plotted some new figures to identify any patterns in what BINs are novel.
 
-### Time 
+### Time
 
-First we wanted to compare novel vs non-novel bins by month to see if there are times of year when we get more novel taxa than others. 
+First we wanted to compare novel vs non-novel bins by month to see if there are times of year when we get more novel taxa than others.
 
 ```{r}
 #| label: novel-x-month
@@ -255,6 +288,28 @@ ggsave("plots/biomarathon_barcoding_novel_per_month.png", plot = num_novel_month
        height = 10, width = 8, units = "in", dpi = 400)
 
 ggplotly(num_novel_month)
+
+pct_novel_month_years <- sd %>% 
+  rename(CollectionDate = `Collection Date...29`) %>% 
+  mutate(CollectionDate = as.Date(CollectionDate, format = "%d-%b-%Y"),
+         month = as.numeric(format(CollectionDate, "%m")),
+         month_text = month(month, label = TRUE, abbr = TRUE),
+         year = as.numeric(format(CollectionDate, "%Y"))) %>% 
+  filter(!is.na(`BIN TYPE`) & !is.na(month) & !is.na(year)) %>% 
+  group_by(`BIN TYPE`, month, month_text, year) %>% 
+  summarise(n = n_distinct(BIN), .groups = "drop") %>% 
+  #pivot_wider(names_from = `BIN TYPE`, values_from = n, values_fill = 0) %>% 
+  ggplot(aes(x = month_text, y = n, fill = `BIN TYPE`)) + 
+  geom_col(position = "fill") +
+  facet_wrap(~ year, ncol = 1) +
+  scale_fill_manual(values = novel_pal) + 
+  labs(x = "Month", y = "Number of BINs", fill = NULL)+
+  theme(panel.spacing.y = unit(0.2, "lines"))
+
+ggsave("plots/biomarathon_barcoding_pct_novel_per_month_years_sep.png", plot = pct_novel_month_years, 
+       height = 10, width = 8, units = "in", dpi = 400)
+
+ggplotly(pct_novel_month_years)
 
 ```
 
@@ -290,7 +345,7 @@ m_null
 anova(m_null, m0, test = "Chisq")
 ```
 
-I tested the relationship between month and BIN novelty with a few statistical tests. I started with GLMM because there was a lot of variation in number of samples sequenced across months and years, because we are really interested in the proportions of novel BINs per month rather than the counts, and because the same months were sampled repeatedly across multiple years, I wanted to try a year-level random effect. I ran it both with and without the beta binomial family and checked these for overdispersion. They both showed the random effect was 0 so year doesn't affect these models and we don't need to include it. The beta binomial GLMM had a very high dispersion parameter, indicating negligible extra-binomial variance (it effectively converges to a standard binomial) so the beta-binomial fit wasn't needed either. Therefore, I decided to just run a regular GLM, which had a lower AIC (124.8) than the binomial GLMM (126.8) (beta-binomial GLMM was unable to converge and has AIC of NA). I ran an ANOVA of the GLM comparing this model to an intercept-only null model which was non-significant (χ² = 11.52, df = 10, p = 0.32), giving no evidence of a monthly effect on BIN novelty p-value was 0.32 so no pattern by month. I also ran a null model to compare against the GLM and found the null model had a lower AIC (116.4), confirming there's no pattern associated with month. 
+I tested the relationship between month and BIN novelty with a few statistical tests. I started with GLMM because there was a lot of variation in number of samples sequenced across months and years, because we are really interested in the proportions of novel BINs per month rather than the counts, and because the same months were sampled repeatedly across multiple years, I wanted to try a year-level random effect. I ran it both with and without the beta binomial family and checked these for overdispersion. They both showed the random effect was 0 so year doesn't affect these models and we don't need to include it. The beta binomial GLMM had a very high dispersion parameter, indicating negligible extra-binomial variance (it effectively converges to a standard binomial) so the beta-binomial fit wasn't needed either. Therefore, I decided to just run a regular GLM, which had a lower AIC (124.8) than the binomial GLMM (126.8) (beta-binomial GLMM was unable to converge and has AIC of NA). I ran an ANOVA of the GLM comparing this model to an intercept-only null model which was non-significant (χ² = 11.52, df = 10, p = 0.32), giving no evidence of a monthly effect on BIN novelty p-value was 0.32 so no pattern by month. I also ran a null model to compare against the GLM and found the null model had a lower AIC (116.4), confirming there's no pattern associated with month.
 
 ```{r}
 #| label: novel-x-month2
@@ -314,9 +369,9 @@ ggsave("plots/biomarathon_barcoding_pct_novel_per_month.png", plot = pct_novel_m
 ggplotly(pct_novel_month)
 ```
 
-It looks like maybe there are more BINs detected in April overall, we have highest non-unique and unique BINs in April 2021-2023. Percentage-wise I'm not seeing much of a pattern. 
+It looks like maybe there are more BINs detected in April overall, we have highest non-unique and unique BINs in April 2021-2023. Percentage-wise I'm not seeing much of a pattern.
 
-We were also interested in looking at this question by season. 
+We were also interested in looking at this question by season.
 
 ```{r}
 #| label: novel-x-season
@@ -382,7 +437,8 @@ m_season
 anova(m_season)
 
 ```
-After running a GLM on season instead of month, I found the data don't support a seasonal pattern of novel bin detection (χ² = 0.93, df = 3, p = 0.82). 
+
+After running a GLM on season instead of month, I found the data don't support a seasonal pattern of novel bin detection (χ² = 0.93, df = 3, p = 0.82).
 
 ### Depth
 
@@ -451,7 +507,7 @@ table(as.numeric(sd$Depth...11))
 
 Most BINs were shallow, not a big difference in novel/known BINs across depths. I'm noticing the depths are pretty discontinuous, do we want to present the depths as less continuous in the plot (eg, instead of 50m bins, one for 0-11, another for 97-150, a third for 193-270)?
 
-As a first pass I tested the relationship between sampling depth and BIN novelty with a Man-Whitney U test because the depth data are continuous, but aren't normally distributed. I also ran an logistic regression because it can provide more detailed information on the response of BIN novelty to depth and it uses the actual depth values, not just the ranks, which might be important with these discontinuous samplings. 
+As a first pass I tested the relationship between sampling depth and BIN novelty with a Man-Whitney U test because the depth data are continuous, but aren't normally distributed. I also ran an logistic regression because it can provide more detailed information on the response of BIN novelty to depth and it uses the actual depth values, not just the ranks, which might be important with these discontinuous samplings.
 
 ```{r}
 #| label: novel-x-depth-test
@@ -475,7 +531,7 @@ m_depth <- glm(BinType ~ Depth, family = binomial, data = sd_glm)
 summary(m_depth)
 ```
 
-Neither Mann-Whitney U test (p = 0.99) nor the logistic regression (p = 0.38) detected significant associations between bin novelty and depth of sample collection. 
+Neither Mann-Whitney U test (p = 0.99) nor the logistic regression (p = 0.38) detected significant associations between bin novelty and depth of sample collection.
 
 ### Holoplankton vs meroplankton
 
@@ -518,9 +574,9 @@ ggplotly(pct_holo_mero)
 sd %>% select(`Field ID`, `Process ID`, Phylum, BIN, `BIN TYPE`, Identification, Class, Order, Family, Subfamily, Tribe, Genus, Species, Identification_and_rank, holo_mero) %>% filter(is.na(holo_mero))
 ```
 
-I joined the BINs to the holo-mero list based on the species identification. For these, any taxon marked "neither" was in the holo-mero list, and that list marked the taxon as neither holo nor mero plankton. Anything marked NA here was not included in the list. Maybe it is worth revisiting the NAs and seeing if we can manually assign any of those? I did add the ranks for the join so any higher level taxa should be formatted the same as the mapping sheet I'm using. 
+I joined the BINs to the holo-mero list based on the species identification. For these, any taxon marked "neither" was in the holo-mero list, and that list marked the taxon as neither holo nor mero plankton. Anything marked NA here was not included in the list. Maybe it is worth revisiting the NAs and seeing if we can manually assign any of those? I did add the ranks for the join so any higher level taxa should be formatted the same as the mapping sheet I'm using.
 
-Using just the samples we do have info on, I ran a fisher's test to see if there are more novel bins for taxa that have non-planktonic life phases. 
+Using just the samples we do have info on, I ran a fisher's test to see if there are more novel bins for taxa that have non-planktonic life phases.
 
 ```{r}
 #| label: holo-mero-test
