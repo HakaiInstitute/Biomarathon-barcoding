@@ -15,11 +15,11 @@
 
 # Biomarathon barcoding
 
-Include record citation here.
+Lemay, M., Closs, A., Currie-Olsen, D., Fedje, B., Fretwell, K., Froese, T., Hall, K., Janusson, C., Manning, F., Myers, E., Natola, L., Nimmon, A., Okamoto, N., Opie, R., Prentice, C., Sadlier-Brown, G., Whalen, M., & Kellogg, C. (2026). Micro-invertebrate DNA Barcodes from Quadra Island, BC (Biomarathon) (v1.0) [Data set]. Hakai Institute. https://doi.org/10.21966/qrxk-vb32
 
 ## Abstract
 
-Provide a summary here.
+This repository contains samples collected as part of a three-year initiative aimed at identifying and filling gaps in DNA barcode sequence availability for coastal marine micro-invertebrates. We used year-round, bi-weekly collections at a fixed near-shore location in Hyacinth Bay near Quadra Island British Columbia to survey the seasonal diversity of zooplankton and other micro-invertebrates. Additional samples were collected from a broader range of depths and habitats in the surrounding region using plankton nets, light traps, and short-term recruitment devices (settlement plates). DNA barcoding targeting the mitochondrial COI gene was successful for 2,914 specimens spanning 15 different phyla.
 
 ## Method
 
@@ -27,7 +27,7 @@ Provide a brief description of the methodology here, or link to protocols used.
 
 ## Reports
 
-Any link to reports associated with this dataset. The reports can be made available within this same repository.
+Bold Recordset: https://portal.boldsystems.org/recordset/DS-QHAK2
 
 ## How to Contribute
 
