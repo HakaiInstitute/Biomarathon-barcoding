@@ -279,7 +279,8 @@ pct_novel_month_years <- sd %>%
   scale_fill_manual(values = c(
     "Previously in BOLD" = novel_pal[2],
     "Novel BINs" = novel_pal[1])) +
-  labs(x = "Month", y = "Number of BINs", fill = NULL)+
+  scale_y_continuous(labels = scales::percent) +
+  labs(x = "Month", y = "Percent of BINs", fill = NULL)+
   theme(panel.spacing.y = unit(0.2, "lines"))
 
 ggsave("plots/biomarathon_barcoding_pct_novel_per_month_years_sep.png", plot = pct_novel_month_years, 
