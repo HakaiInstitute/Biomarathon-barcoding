@@ -19,16 +19,8 @@ Lemay, M., Closs, A., Currie-Olsen, D., Fedje, B., Fretwell, K., Froese, T., Hal
 
 ## Abstract
 
-This repository contains samples collected as part of a three-year initiative aimed at identifying and filling gaps in DNA barcode sequence availability for coastal marine micro-invertebrates. We used year-round, bi-weekly collections at a fixed near-shore location in Hyacinth Bay near Quadra Island British Columbia to survey the seasonal diversity of zooplankton and other micro-invertebrates. Additional samples were collected from a broader range of depths and habitats in the surrounding region using plankton nets, light traps, and short-term recruitment devices (settlement plates). DNA barcoding targeting the mitochondrial COI gene was successful for 2,914 specimens spanning 15 different phyla.
+This repository contains the analysis of samples collected as part of a three-year initiative aimed at identifying and filling gaps in DNA barcode sequence availability for nearshore marine invertebrate biodiversity. Zooplankton were collected every week between June 2020 – June 2023 at a fixed near-shore location in Hyacinth Bay near Quadra Island British Columbia. Additional samples were collected from a broader range of depths and habitats in the surrounding region using plankton nets, light traps, and short-term recruitment devices (settlement plates). DNA barcoding targeting the mitochondrial COI gene was successful for 2,914 specimens spanning 15 different phyla.
 
-## Method
-
-Systematic zooplankton surveys were carried out from June 2020 to June 2023 in the nearshore waters around Quadra Island, British Columbia, Canada. Samples were collected using 250 µm plankton nets, light traps, and settlement plates anchored just below the waterline. Bulk invertebrate samples were visually sorted, identified to the lowest possible taxonomic rank, and photographed via microscopy. DNA was extracted from each specimen and the mitochondrial cytochrome c oxidase subunit I gene (COI) was amplified using primers jgLCO1490 and jgHCO2198 (Geller et al. 2013). Non-purified PCR product was submitted to Génome Québec Centre d’Expertise et de Services (Montréal, Canada) or the Canadian Centre for DNA barcoding (Guelph, Canada) for Sanger sequencing. Taxonomic assignment of sequences was carried out using BLAST searches (blastn) of the NCBI nucleotide database (nr/nt) and the Barcode of Life Data System (BOLD). BINs were assigned to sequences using algorithmic clustering from BOLD (Ratnasingham and Hebert 2013). 
-
-Citations:
-Geller J, Meyer C, Parker M, and Hawk H. 2013. Redesign of PCR primers for mitochondrial cytochrome c oxidase subunit I for marine invertebrates and application in all‐taxa biotic surveys. Molecular Ecology Resources, 13(5): 851–861. https://doi.org/10.1111/1755-0998.12138.
-
-Ratnasingham S, and Hebert PDN. 2013. A DNA-Based Registry for All Animal Species: The Barcode Index Number (BIN) System. PLoS ONE, 8(7): e66213. https://doi.org/10.1371/journal.pone.0066213.
 
 ## Reports
 
