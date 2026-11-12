@@ -45,8 +45,8 @@ sd <- read_excel("QHAK2_Dec2025.xlsx", sheet = "Samples")
 sd <- sd %>% 
     rename(Phylum = `Phylum...6`,
          bin_type = `BIN TYPE`,
-         CollectionDate = `Collection Date...29`,
-         Depth = `Depth...11`) %>%
+         CollectionDate = `Collection Date...10`,
+         Depth = `Depth`) %>%
   mutate(Identification_and_rank = case_when(
       !is.na(Species) ~ Identification,
       !is.na(Genus) ~ paste(Identification, "genus"),
