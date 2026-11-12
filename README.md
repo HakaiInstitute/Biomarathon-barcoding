@@ -13,9 +13,7 @@
 </div>
 
 
-# Biomarathon barcoding
-
-Lemay, M., Closs, A., Currie-Olsen, D., Fedje, B., Fretwell, K., Froese, T., Hall, K., Janusson, C., Manning, F., Myers, E., Natola, L., Nimmon, A., Okamoto, N., Opie, R., Prentice, C., Sadlier-Brown, G., Whalen, M., & Kellogg, C. (2026). Micro-invertebrate DNA Barcodes from Quadra Island, BC (Biomarathon) (v1.0) [Data set]. Hakai Institute. https://doi.org/10.21966/qrxk-vb32
+# Biomarathon DNA barcoding
 
 ## Abstract
 
@@ -24,7 +22,9 @@ This repository contains the analysis of samples collected as part of a three-ye
 
 ## Reports
 
-Bold Recordset: https://portal.boldsystems.org/recordset/DS-QHAK2
+[1] Lemay, M., Closs, A., Currie-Olsen, D., Fedje, B., Fretwell, K., Froese, T., Hall, K., Janusson, C., Manning, F., Myers, E., Natola, L., Nimmon, A., Okamoto, N., Opie, R., Prentice, C., Sadlier-Brown, G., Whalen, M., & Kellogg, C. (2026). Micro-invertebrate DNA Barcodes from Quadra Island, BC (Biomarathon) (v1.0) [Data set]. Hakai Institute. https://doi.org/10.21966/qrxk-vb32
+
+[2] Bold Recordset: https://portal.boldsystems.org/recordset/DS-QHAK2
 
 ## How to Contribute
 
